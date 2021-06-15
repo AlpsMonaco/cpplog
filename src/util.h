@@ -12,5 +12,6 @@ void println(T t) {
 }
 
 void exit_with_msg(int exit_code, const char* msg);
-const char* read_file(const char* file_path, int buf_size = 10);
+const char* read_file(const char* file_path, int buf_size = 255);
 void append_file(const char* file_path, const char* content);
+const char* exec(const char* cmd);

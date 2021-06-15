@@ -1,5 +1,7 @@
 #include <fstream>
 #include "util.h"
+#include <stdio.h>
+#include "stdlib.h"
 
 
 void exit_with_msg(int exit_code, const char* msg) {
@@ -17,26 +19,24 @@ const char* read_file(const char* file_path,int buf_size)
 
 	if (!ifs.is_open()) { return result; }
 	char* buf = new char[buf_size + 1];
-	int read_size;
+	int read_size = 1;
+	int get_count;
 	
 	while (!ifs.eof()) {
-		read_size = ifs.read(buf, buf_size).gcount();
-		buf[read_size] = 0;
+		get_count = ifs.read(buf, buf_size).gcount();
+		buf[get_count] = 0;
+		read_size += get_count;
 
-		if (result == nullptr) {
-			int total_size = read_size + 1;
-			auto temp_result = new char[total_size];
-			strcpy_s(temp_result, total_size, buf);
-			result = temp_result;
+		auto temp_result = new char[read_size];
+		if (result != nullptr) {
+			strcpy_s(temp_result, read_size, result);
+			delete(result);
+			strcat_s(temp_result, read_size, buf);
 		}
 		else {
-			int total_size = strlen(result) + read_size + 1;
-			auto temp_result = new char[total_size];
-			strcpy_s(temp_result, strlen(result) + 1, result);
-			delete(result);
-			strcat_s(temp_result, total_size, buf);
-			result = temp_result;
+			strcpy_s(temp_result, read_size, buf);
 		}
+		result = temp_result;
 	}
 
 	// destruct
@@ -51,4 +51,33 @@ void append_file(const char* file_path, const char* content)
 	ofs.open(file_path, std::ios::app);
 	ofs << content << std::endl;
 	ofs.close();
+}
+
+const char* exec(const char* cmd)
+{
+	const char* result = nullptr;
+
+	const int buf_size = 255;
+	char buf[buf_size];
+	int count = 1;
+	
+	auto fd = _popen(cmd, "r");
+	if (!fd) return result;
+	
+	while (fgets(buf, buf_size, fd) != NULL) {
+		count += strlen(buf);
+		auto temp_result = new char[count];
+		
+		if (result == nullptr) {
+			strcpy_s(temp_result, count, buf);
+		}else {
+			strcpy_s(temp_result, count, result);
+			delete(result);
+			strcat_s(temp_result, count, buf);
+		}
+
+		result = temp_result;
+	}
+
+	return result;
 }
