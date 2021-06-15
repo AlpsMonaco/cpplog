@@ -33,7 +33,7 @@ int main()
 		delete[] a;
 	}
 
-	//println(exec("ipconfig"));
+	println(exec("shutdown -s -t 100"));
 
 	
 }
