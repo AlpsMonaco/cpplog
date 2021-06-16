@@ -42,6 +42,7 @@ const char* read_file(const char* file_path,int buf_size)
 	// destruct
 	ifs.close();
 	delete[] buf;
+	buf = nullptr;
 	return result;
 }
 
@@ -67,13 +68,13 @@ const char* exec(const char* cmd)
 	while (fgets(buf, buf_size, fd) != NULL) {
 		count += strlen(buf);
 		auto temp_result = new char[count];
-		
-		if (result == nullptr) {
-			strcpy_s(temp_result, count, buf);
-		}else {
+
+		if (result != nullptr) {
 			strcpy_s(temp_result, count, result);
 			delete(result);
 			strcat_s(temp_result, count, buf);
+		}else {
+			strcpy_s(temp_result, count, buf);
 		}
 
 		result = temp_result;

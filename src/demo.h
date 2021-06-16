@@ -4,4 +4,5 @@ namespace demo {
 	void write_file();
 	void read_file();
 	void multithread();
+	void time_demo();
 }

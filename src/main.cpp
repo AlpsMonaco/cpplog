@@ -2,40 +2,20 @@
 #include "util.h"
 #include "demo.h"
 
-
-void printsize(const char* c) {
-	println(sizeof(c));
-}
-
-
-void printstrlen(const char* c) {
-	println(strlen(c));
-}
-
-
 int main()
 {
-	//auto a = "012345";
-	//auto b = "01234";
+	//auto a = read_file(demo::demo_file_path);
 
-	//const int buf_size = 12;
+	//auto a = read_file(demo::demo_file_path);
+	//if (a) {
+	//	print(a);
+	//	delete[] a;
+	//}
 
-	//char buf[buf_size];
-
-	//strcpy_s(buf, buf_size, a);
-	//strcat_s(buf, buf_size, b);
-
-	//println(buf);
+	//println(exec("ipconfig"));
 	
-	auto a = read_file(demo::demo_file_path);
-	if (a) {
-		print(a);
-		delete[] a;
-	}
 
-	println(exec("shutdown -s -t 100"));
 
-	
 }
 
 
