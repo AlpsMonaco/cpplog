@@ -12,38 +12,30 @@ void exit_with_msg(int exit_code, const char* msg) {
 // 带缓冲读取文件
 const char* read_file(const char* file_path,int buf_size)
 {
-	const char* result = nullptr;
-
 	std::ifstream ifs;
 	ifs.open(file_path);
 
-	if (!ifs.is_open()) { return result; }
-	char* buf = new char[buf_size + 1];
-	int read_size = 1;
-	int get_count;
-	
-	while (!ifs.eof()) {
-		get_count = ifs.read(buf, buf_size).gcount();
-		buf[get_count] = 0;
-		read_size += get_count;
+	if (!ifs.is_open()) { return nullptr; }
 
-		auto temp_result = new char[read_size];
-		if (result != nullptr) {
-			strcpy_s(temp_result, read_size, result);
-			delete(result);
-			strcat_s(temp_result, read_size, buf);
-		}
-		else {
-			strcpy_s(temp_result, read_size, buf);
-		}
-		result = temp_result;
+	std::string str_buf;
+	if (buf_size < 1) buf_size = 256;
+
+	char* buf = new char[buf_size];
+	int read_size;
+
+	using namespace std;
+	while (!ifs.eof()) {
+		read_size = ifs.read(buf, buf_size-1).gcount();
+		buf[read_size] = 0;
+		str_buf += buf;
 	}
 
-	// destruct
-	ifs.close();
-	delete[] buf;
-	buf = nullptr;
-	return result;
+	buf_size = str_buf.size();
+	auto temp_char = new char[buf_size];
+	temp_char[buf_size] = '\0';
+	str_buf.copy(temp_char, buf_size, 0);
+
+	return temp_char;
 }
 
 void append_file(const char* file_path, const char* content)
@@ -54,7 +46,7 @@ void append_file(const char* file_path, const char* content)
 	ofs.close();
 }
 
-const char* exec(const char* cmd)
+const char* win_exec(const char* cmd)
 {
 	const char* result = nullptr;
 
@@ -81,4 +73,12 @@ const char* exec(const char* cmd)
 	}
 
 	return result;
+}
+
+const char* exec(const char* cmd) {
+#ifdef _WIN32 || _WIN64
+	return win_exec(cmd);
+#endif // _WIN32 || _WIN64
+
+	return nullptr;
 }
