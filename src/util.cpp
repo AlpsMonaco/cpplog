@@ -72,6 +72,7 @@ const char* win_exec(const char* cmd)
 		result = temp_result;
 	}
 
+	_pclose(fd);
 	return result;
 }
 
@@ -79,6 +80,5 @@ const char* exec(const char* cmd) {
 #ifdef _WIN32 || _WIN64
 	return win_exec(cmd);
 #endif // _WIN32 || _WIN64
-
 	return nullptr;
 }

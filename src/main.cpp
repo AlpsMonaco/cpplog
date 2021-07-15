@@ -2,31 +2,20 @@
 #include "util.h"
 #include "demo.h"
 
-const char* t() {
-	const char* a = "aaa";
-	return a;
+void test(int& a){
+	a = 1;
 }
+
 
 int main()
 {
-	//auto a = read_file(demo::demo_file_path);
-	//print(a);
+	const char* a = nullptr;
+	char b[20] = "hello";
 
-	//string a = "123";
-	//println(a.size());
-	//println(a.c_str());
-
-	//auto a = read_file(demo::demo_file_path);
-	//if (a) {
-	//	print(a);
-	//	delete[] a;
-	//}
-
-	//println(exec("ipconfig"));
-	//const char* a = "123456789";
-	//println(sizeof(*a));
-	//
-
+	a = b;
+	println(a);
+	b[1] = 'c';
+	println(a);
 
 }
 
