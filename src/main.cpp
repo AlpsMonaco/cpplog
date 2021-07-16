@@ -1,22 +1,10 @@
-﻿#include <iostream>
-#include "util.h"
-#include "demo.h"
+﻿#include "util.h"
+#include "log.h"
 
-void test(int& a){
-	a = 1;
-}
-
-
-int main()
+int main(int argc, char const *argv[])
 {
-	const char* a = nullptr;
-	char b[20] = "hello";
-
-	a = b;
+	/* code */
+	char a[20];
+	self::log::current_time_str(a, 20);
 	println(a);
-	b[1] = 'c';
-	println(a);
-
 }
-
-
