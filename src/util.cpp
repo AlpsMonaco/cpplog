@@ -42,12 +42,12 @@ const char *read_file(const char *file_path, int buf_size)
 		else
 		{
 			auto tmp = new char[tmp_size];
-			pseudolib::strcpy(result, tmp_size, tmp);
+			strlib::strcpy(result, tmp_size, tmp);
 			delete[] result;
 			result = tmp;
 		}
 
-		pseudolib::strcat(result, tmp_size, buf);
+		strlib::strcat(result, tmp_size, buf);
 	}
 
 	return result;
@@ -74,7 +74,7 @@ void read_file(const char *file_path, char *dst, int dst_size, int buf_size)
 	{
 		read_size = ifs.read(buf, buf_size - 1).gcount();
 		buf[read_size] = '\0';
-		pseudolib::strcat(dst, dst_size, buf);
+		strlib::strcat(dst, dst_size, buf);
 	}
 
 	delete[] buf;
@@ -88,7 +88,7 @@ void append_file(const char *file_path, const char *content)
 	ofs.close();
 }
 
-namespace pseudolib
+namespace strlib
 {
 	// src -> dst
 	void strcpy(const char *src, int src_size, char *dst)

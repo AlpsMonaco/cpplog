@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <time.h>
+#include "util.h"
 
 enum LOG_LEVEL
 {
@@ -10,25 +11,17 @@ enum LOG_LEVEL
     DEBUG
 };
 
-namespace self
+namespace mylog
 {
-    class log
+    class logger
     {
     public:
-        log(const char *log_name)
-        {
-            this->log_name = log_name;
-        }
-
-        log(std::string log_name)
-        {
-            this->log_name = log_name;
-        }
-
-        std::string get_log_name();
+        logger(const char *log_name);
+        void get_log_name(char *dst);
         static void current_time_str(char *dst, size_t size);
+        static const int log_name_size = 128;
 
     protected:
-        std::string log_name;
+        char log_name[log_name_size];
     };
 }

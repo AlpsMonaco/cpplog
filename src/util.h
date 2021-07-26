@@ -20,7 +20,7 @@ void append_file(const char *file_path, const char *content);
 const char *win_exec(const char *cmd);
 // const char* exec(const char* cmd);
 
-namespace pseudolib
+namespace strlib
 {
 	void strcpy(const char *src, int src_size, char *dst);
 	void strcat(char *dst, int dst_size, const char *src);
