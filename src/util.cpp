@@ -20,27 +20,64 @@ const char *read_file(const char *file_path, int buf_size)
 		return nullptr;
 	}
 
-	std::string str_buf;
 	if (buf_size < 1)
 		buf_size = 256;
 
-	char *buf = new char[buf_size];
 	int read_size;
+	int read_time = 0;
+	char *buf = new char[buf_size];
+	char *result = nullptr;
 
-	using namespace std;
+	while (!ifs.eof())
+	{
+		read_time++;
+		read_size = ifs.read(buf, buf_size - 1).gcount();
+		buf[read_size] = '\0';
+		auto tmp_size = buf_size * read_time;
+		if (result == nullptr)
+		{
+			result = new char[tmp_size];
+			result[0] = '\0';
+		}
+		else
+		{
+			auto tmp = new char[tmp_size];
+			pseudolib::strcpy(result, tmp_size, tmp);
+			delete[] result;
+			result = tmp;
+		}
+
+		pseudolib::strcat(result, tmp_size, buf);
+	}
+
+	return result;
+}
+
+void read_file(const char *file_path, char *dst, int dst_size, int buf_size)
+{
+	std::ifstream ifs;
+	ifs.open(file_path);
+
+	if (!ifs.is_open())
+	{
+		return;
+	}
+
+	if (buf_size < 1)
+		buf_size = 256;
+
+	int read_size;
+	char *buf = new char[buf_size];
+
+	dst[0] = '\0';
 	while (!ifs.eof())
 	{
 		read_size = ifs.read(buf, buf_size - 1).gcount();
-		buf[read_size] = 0;
-		str_buf += buf;
+		buf[read_size] = '\0';
+		pseudolib::strcat(dst, dst_size, buf);
 	}
 
-	buf_size = str_buf.size();
-	auto temp_char = new char[buf_size];
-	temp_char[buf_size] = '\0';
-	str_buf.copy(temp_char, buf_size, 0);
-
-	return temp_char;
+	delete[] buf;
 }
 
 void append_file(const char *file_path, const char *content)
@@ -51,44 +88,37 @@ void append_file(const char *file_path, const char *content)
 	ofs.close();
 }
 
-// const char *win_exec(const char *cmd)
-// {
-// 	const char *result = nullptr;
+namespace pseudolib
+{
+	// src -> dst
+	void strcpy(const char *src, int src_size, char *dst)
+	{
+		for (int i = 0; i < src_size; i++)
+		{
+			dst[i] = src[i];
+			if (dst[i] == '\0')
+				break;
+		}
+	}
 
-// 	const int buf_size = 255;
-// 	char buf[buf_size];
-// 	int count = 1;
-
-// 	auto fd = _popen(cmd, "r");
-// 	if (!fd)
-// 		return result;
-
-// 	while (fgets(buf, buf_size, fd) != NULL)
-// 	{
-// 		count += strlen(buf);
-// 		auto temp_result = new char[count];
-
-// 		if (result != nullptr)
-// 		{
-// 			strcpy_s(temp_result, count, result);
-// 			delete (result);
-// 			strcat_s(temp_result, count, buf);
-// 		}
-// 		else
-// 		{
-// 			strcpy_s(temp_result, count, buf);
-// 		}
-
-// 		result = temp_result;
-// 	}
-
-// 	_pclose(fd);
-// 	return result;
-// }
-
-// const char* exec(const char* cmd) {
-// #ifdef _WIN32 || _WIN64
-// 	return win_exec(cmd);
-// #endif // _WIN32 || _WIN64
-// 	return nullptr;
-// }
+	// dst + src
+	void strcat(char *dst, int dst_size, const char *src)
+	{
+		for (int i = 0; i < dst_size; i++)
+		{
+			if (dst[i] == '\0')
+			{
+				int j = 0;
+				do
+				{
+					dst[i] = src[j];
+					j++;
+					if (src[j] == '\0')
+					{
+						return;
+					}
+				} while (++i < dst_size);
+			}
+		}
+	}
+}

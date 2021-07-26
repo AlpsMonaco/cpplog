@@ -15,6 +15,13 @@ void println(T t)
 
 void exit_with_msg(int exit_code, const char *msg);
 const char *read_file(const char *file_path, int buf_size = 1024);
+void read_file(const char *file_path, char *dst, int dst_size, int buf_size = 1024);
 void append_file(const char *file_path, const char *content);
 const char *win_exec(const char *cmd);
 // const char* exec(const char* cmd);
+
+namespace pseudolib
+{
+	void strcpy(const char *src, int src_size, char *dst);
+	void strcat(char *dst, int dst_size, const char *src);
+}

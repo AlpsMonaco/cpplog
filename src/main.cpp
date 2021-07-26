@@ -1,10 +1,6 @@
 ﻿#include "util.h"
-#include "log.h"
 
-int main(int argc, char const *argv[])
+int main(int argc, char **argv)
 {
-	/* code */
-	char a[20];
-	self::log::current_time_str(a, 20);
-	println(a);
+	println(read_file("D:\\Library\\php_as\\composer.json"));
 }
