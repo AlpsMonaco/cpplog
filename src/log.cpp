@@ -1,17 +1,6 @@
 #include "log.h"
 #pragma warning(disable : 4996)
 
-void mylog::logger::current_time_str(char *dst, size_t size)
-{
-    if (size < 20)
-        return;
-
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-
-    sprintf(dst, "%d-%d-%d %02d:%02d:%02d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-}
-
 void mylog::logger::current_time_str(char *dst)
 {
     time_t now = time(0);
@@ -41,17 +30,13 @@ void mylog::logger::log_time_preffix(char *dst)
 
 mylog::logger::logger(const char *log_name)
 {
-    strlib::strcpy(this->log_name, log_name_size, log_name);
+    // this->log_fd = nullptr;
+    strlib::strcpy(this->log_name, log_name);
 }
 
 mylog::logger::~logger()
 {
     clear_log_handle();
-}
-
-void mylog::logger::get_log_name(char *dst)
-{
-    strlib::strcpy(dst, this->log_name);
 }
 
 void mylog::logger::create_log_handle()
@@ -67,15 +52,17 @@ void mylog::logger::create_log_handle()
     if (!fd->is_open())
     {
         clear_log_handle();
+        delete fd;
         return;
     }
 
-    log_fd = fd;
+    this->log_fd = fd;
 }
 
 bool mylog::logger::is_same_date()
 {
     char tmp_date[log_date_size];
+    current_date(tmp_date);
     return strlib::strequ(tmp_date, log_date);
 }
 
@@ -102,14 +89,43 @@ void mylog::logger::write(const char *log)
     delete[] content;
 }
 
+// log and print
+void mylog::logger::log(const char *log)
+{
+    if (!is_same_date())
+    {
+        clear_log_handle();
+        create_log_handle();
+    }
+
+    auto content = new char[log_time_preffix_size + strlib::strlen(log)];
+    log_time_preffix(content);
+    strlib::strcat(content, log);
+
+    *log_fd << content << std::endl;
+    std::cout << content << std::endl;
+
+    delete[] content;
+}
+
+void mylog::logger::format_log(char *dst, const char *log)
+{
+    log_time_preffix(dst);
+    strlib::strcat(dst, log);
+}
+
 void mylog::logger::close_log_handle()
 {
+
     if (this->log_fd != nullptr)
     {
         if (this->log_fd->is_open())
         {
             this->log_fd->close();
         }
+
+        delete this->log_fd;
+        this->log_fd = nullptr;
     }
 }
 
