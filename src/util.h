@@ -22,6 +22,10 @@ const char *win_exec(const char *cmd);
 
 namespace strlib
 {
-	void strcpy(const char *src, int src_size, char *dst);
+	void strcpy(char *dst, int src_size, const char *src);
+	void strcpy(char *dst, const char *src);
 	void strcat(char *dst, int dst_size, const char *src);
+	void strcat(char *dst, const char *src);
+	bool strequ(const char *str1, const char *str2);
+	int strlen(const char *src);
 }

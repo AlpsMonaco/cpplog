@@ -42,7 +42,7 @@ const char *read_file(const char *file_path, int buf_size)
 		else
 		{
 			auto tmp = new char[tmp_size];
-			strlib::strcpy(result, tmp_size, tmp);
+			strlib::strcpy(tmp, tmp_size, result);
 			delete[] result;
 			result = tmp;
 		}
@@ -90,8 +90,20 @@ void append_file(const char *file_path, const char *content)
 
 namespace strlib
 {
+	void strcpy(char *dst, const char *src)
+	{
+		int i = 0;
+		while (true)
+		{
+			dst[i] = src[i];
+			if (src[i] == '\0')
+				return;
+			i++;
+		}
+	}
+
 	// src -> dst
-	void strcpy(const char *src, int src_size, char *dst)
+	void strcpy(char *dst, int src_size, const char *src)
 	{
 		for (int i = 0; i < src_size; i++)
 		{
@@ -120,5 +132,48 @@ namespace strlib
 				} while (++i < dst_size);
 			}
 		}
+	}
+
+	void strcat(char *dst, const char *src)
+	{
+		int i = 0;
+		while (dst[i] != '\0')
+		{
+			i++;
+		}
+
+		int j = 0;
+		char tmp;
+		while (true)
+		{
+			tmp = src[j];
+			dst[i + j] = tmp;
+			if (tmp == '\0')
+				return;
+			j++;
+		}
+	}
+
+	bool strequ(const char *str1, const char *str2)
+	{
+		int i = 0;
+		while (str1[i] != '\0')
+		{
+			if (str1[i] != str2[i])
+				return false;
+			i++;
+		}
+
+		return str2[i] == '\0';
+	}
+
+	int strlen(const char *src)
+	{
+		int len;
+		for (len = 0; src[len] != '\0'; len++)
+		{
+		}
+
+		return len;
 	}
 }
