@@ -16,6 +16,7 @@ namespace mylog
         void log(const char *log);
         void format_log(char *dst, const char *log);
         void flush_log();
+        void set_log_name(const char *log_name);
 
         // 2006-01-02 15:04:05
         static void current_time_str(char *dst);
@@ -45,4 +46,5 @@ namespace mylog
         bool is_same_date();
         void close_log_handle();
     };
+
 }

@@ -53,6 +53,8 @@ const char *read_file(const char *file_path, int buf_size)
 	return result;
 }
 
+
+
 void read_file(const char *file_path, char *dst, int dst_size, int buf_size)
 {
 	std::ifstream ifs;

@@ -17,6 +17,11 @@ void mylog::logger::current_date(char *dst)
     sprintf(dst, "%d-%d-%d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday);
 }
 
+void mylog::logger::set_log_name(const char *log_name)
+{
+    strlib::strcpy(this->log_name, log_name);
+}
+
 // write dst with log time preffix
 // dst requires at least size of 23(including \0)
 // [2006-01-02 15:04:05]
