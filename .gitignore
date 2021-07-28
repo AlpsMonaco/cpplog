@@ -33,3 +33,5 @@
 /src/Debug
 /src/.vs
 /src/.vscode
+/src/*.pdb
+/src/*.log

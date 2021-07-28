@@ -28,6 +28,12 @@ void mylog::logger::log_time_preffix(char *dst)
     sprintf(dst, "[%d-%d-%d %02d:%02d:%02d] ", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
 }
 
+mylog::logger::logger()
+{
+    // this->log_fd = nullptr;
+    strlib::strcpy(this->log_name, "log");
+}
+
 mylog::logger::logger(const char *log_name)
 {
     // this->log_fd = nullptr;

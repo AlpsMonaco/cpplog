@@ -9,6 +9,7 @@ namespace mylog
     class logger
     {
     public:
+        logger();
         logger(const char *log_name);
         ~logger();
         void write(const char *log);
@@ -32,7 +33,7 @@ namespace mylog
         static const int log_time_preffix_size = 23;
 
     protected:
-        char log_name[log_name_size] = "";
+        char log_name[log_name_size] = "log";
 
         // 4 -> strlen(".log")
         char log_file_name[log_name_size + log_date_size + 4] = "";
