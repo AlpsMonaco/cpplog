@@ -30,8 +30,13 @@
 *.exe
 *.out
 *.app
+*.pdb
 /src/Debug
 /src/.vs
 /src/.vscode
 /src/*.pdb
 /src/*.log
+/src/main.ilk
+*.log
+/src/Release/log.tlog
+/src/x64/Release/log.tlog
