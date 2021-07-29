@@ -1,14 +1,49 @@
 #include "util.h"
-#include <map>
-#include <thread>
-#include <Windows.h>
+#include "msg_queue.h"
 
-void test()
+void p(void *s)
 {
-	println("this is test");
+	println((char *)s);
 }
+
+class cTest
+{
+public:
+	cTest(){};
+	void publicPrint()
+	{
+		println("this is public");
+	}
+
+	void test()
+	{
+		std::thread t(&cTest::protectedPrint, this);
+		t.detach();
+	};
+
+protected:
+	void protectedPrint()
+	{
+		println("this is protected");
+	}
+};
 
 int main(int argc, char **argv)
 {
-	sleep_ms(1000);
+	// auto a = new cTest();
+	// a->test();
+	// auto n = new test();
+	// n->tetetet();
+
+	msg_queue *mq = new msg_queue();
+	mq->register_msg(1, p);
+	mq->start();
+
+	char s[] = "hello";
+	void *p = s;
+
+	mq->put_msg(1, p);
+
+	std::this_thread::sleep_for(std::chrono::seconds(10));
+	return 0;
 }

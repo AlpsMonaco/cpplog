@@ -28,6 +28,7 @@ void msg_queue::new_queue_size(int new_size)
 	}
 
 	this->queue = new_queue;
+	this->queue_size = new_size;
 }
 
 void msg_queue::register_msg(int msg_enum, msgcb cb)
@@ -41,20 +42,79 @@ msgcb msg_queue::get_cb(int msg_enum)
 	return it == cb_map.end() ? nullptr : it->second;
 }
 
-void msg_queue::put_msg(int msg_enum, void *msg)
+// put_msg put msg to container;
+// return false when current unfinished tasks num is larget than max_thread_num + queue_size;
+bool msg_queue::put_msg(int msg_enum, void *msg)
 {
+	if (get_unfinished_num() >= (max_thread_num + queue_size))
+	{
+		return false;
+	}
+
+	unfinished_num++;
 	msg_payload p = {msg_enum, msg};
-	queue[queue_pos++] = p;
+	queue[get_next_queue_pos()] = p;
+	return true;
 }
 
 void msg_queue::producer_method()
 {
 	while (true)
 	{
+		if (get_unfinished_num() > 0)
+		{
+			if (current_thread_num < max_thread_num)
+			{
+				current_thread_num++;
+				std::thread(&msg_queue::consumer_method, this).detach();
+			}
+		}
+		else
+		{
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
 	}
+}
+
+void msg_queue::consumer_method()
+{
+	int pos = get_next_handle_pos();
+	msg_payload p = this->queue[pos];
+	msgcb f = get_cb(p.msg_enum);
+	if (f != nullptr)
+	{
+		f(p.msg);
+	}
+
+	unfinished_num--;
+	current_thread_num--;
 }
 
 void msg_queue::set_max_thread_num(int num)
 {
 	this->max_thread_num = num;
+}
+
+int msg_queue::get_next_queue_pos()
+{
+	int pos = queue_pos % queue_size;
+	queue_pos++;
+	return pos;
+}
+
+int msg_queue::get_next_handle_pos()
+{
+	int pos = queue_handled_pos++;
+	return pos % queue_size;
+}
+
+int msg_queue::get_unfinished_num()
+{
+	int num = this->unfinished_num;
+	return num;
+}
+
+void msg_queue::start()
+{
+	std::thread(&msg_queue::producer_method, this).detach();
 }
