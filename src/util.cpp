@@ -15,7 +15,7 @@ void sleep_ms(int ms)
 	Sleep(ms);
 
 #else
-	usleep(1000 * ms)
+	usleep(1000 * ms);
 #endif
 }
 

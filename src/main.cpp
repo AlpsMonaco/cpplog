@@ -1,7 +1,7 @@
-#include "util.h"
+﻿#include "util.h"
 #include <map>
 #include <thread>
-#include <Windows.h>
+
 
 void test()
 {
@@ -10,5 +10,5 @@ void test()
 
 int main(int argc, char **argv)
 {
-	sleep_ms(1000);
+	sleep_ms(10000);
 }
