@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 #include "util.h"
 #include "msg_queue.h"
+=======
+﻿#include "util.h"
+#include <map>
+#include <thread>
+
+>>>>>>> 4d6dd42917887b6143d8723cf16985164e1b370f
 
 void p(void *s)
 {
