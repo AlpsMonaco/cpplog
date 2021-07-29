@@ -1,6 +1,13 @@
 #pragma once
 #include <iostream>
 
+#ifdef _WIN32
+#define _WIN_ENVIROMENT 1
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 // use this when size of dst is larger than src surely.
 template <typename T>
 void copy_container(T src, int src_size, T dst)
@@ -36,8 +43,7 @@ void exit_with_msg(int exit_code, const char *msg);
 const char *read_file(const char *file_path, int buf_size = 1024);
 void read_file(const char *file_path, char *dst, int dst_size, int buf_size = 1024);
 void append_file(const char *file_path, const char *content);
-const char *win_exec(const char *cmd);
-// const char* exec(const char* cmd);
+void sleep_ms(int ms);
 
 namespace strlib
 {

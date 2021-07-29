@@ -9,6 +9,16 @@ void exit_with_msg(int exit_code, const char *msg)
 	exit(exit_code);
 }
 
+void sleep_ms(int ms)
+{
+#ifdef _WIN_ENVIROMENT
+	Sleep(ms);
+
+#else
+	usleep(1000 * ms)
+#endif
+}
+
 // 带缓冲读取文件
 const char *read_file(const char *file_path, int buf_size)
 {
@@ -52,8 +62,6 @@ const char *read_file(const char *file_path, int buf_size)
 
 	return result;
 }
-
-
 
 void read_file(const char *file_path, char *dst, int dst_size, int buf_size)
 {
