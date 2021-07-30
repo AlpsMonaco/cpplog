@@ -31,14 +31,14 @@ public:
 	static const int default_max_thread_num = 5;
 
 protected:
-	int queue_size = 0;
-	int queue_pos = 0;
-	int max_thread_num = default_max_thread_num;
-	std::atomic_int queue_handled_pos = 0;
-	std::atomic_int current_thread_num = 0;
-	std::atomic_int unfinished_num = 0;
+	int queue_size;
+	int queue_pos;
+	int max_thread_num;
+	std::atomic_int queue_handled_pos;
+	std::atomic_int current_thread_num;
+	std::atomic_int unfinished_num;
 
-	msg_payload *queue = nullptr;
+	msg_payload *queue;
 	std::map<int, msgcb> cb_map;
 
 	void new_queue_size(int size);

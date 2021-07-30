@@ -7,6 +7,13 @@ msg_queue::msg_queue()
 
 msg_queue::msg_queue(int queue_size)
 {
+	this->queue_size = 0;
+	this->queue_pos = 0;
+	this->max_thread_num = default_max_thread_num;
+	this->queue_handled_pos = 0;
+	this->current_thread_num = 0;
+	this->unfinished_num = 0;
+	this->queue = nullptr;
 	new_queue_size(default_queue_size);
 }
 
