@@ -34,7 +34,7 @@ protected:
 	int queue_size;
 	int queue_pos;
 	int max_thread_num;
-	std::atomic_int queue_handled_pos;
+	int queue_handled_pos;
 	std::atomic_int current_thread_num;
 	std::atomic_int unfinished_num;
 
@@ -43,10 +43,8 @@ protected:
 
 	void new_queue_size(int size);
 	msgcb get_cb(int msg_enum);
-	void producer();
 	void producer_method();
 	void consumer_method();
 	int get_next_queue_pos();
 	int get_next_handle_pos();
-	int get_current_handled_pos();
 };
