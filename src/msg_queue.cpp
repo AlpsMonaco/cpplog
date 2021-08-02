@@ -12,7 +12,6 @@ msg_queue::msg_queue(int queue_size)
 	this->max_thread_num = default_max_thread_num;
 	this->queue_handled_pos = 0;
 	this->current_thread_num = 0;
-	this->unfinished_num = 0;
 	this->queue = nullptr;
 	new_queue_size(default_queue_size);
 }
@@ -58,7 +57,6 @@ bool msg_queue::put_msg(int msg_enum, void *msg)
 		return false;
 	}
 
-	unfinished_num++;
 	msg_payload p = {msg_enum, msg};
 	queue[get_next_queue_pos()] = p;
 	return true;
@@ -73,7 +71,7 @@ void msg_queue::producer_method()
 			if (current_thread_num < max_thread_num)
 			{
 				current_thread_num++;
-				std::thread(&msg_queue::consumer_method, this).detach();
+				std::thread(&msg_queue::consumer_method, this, get_next_handle_pos()).detach();
 			}
 		}
 		else
@@ -83,9 +81,9 @@ void msg_queue::producer_method()
 	}
 }
 
-void msg_queue::consumer_method()
+void msg_queue::consumer_method(int pos)
 {
-	int pos = get_next_handle_pos();
+	// int pos = get_next_handle_pos();
 	msg_payload p = this->queue[pos];
 	msgcb f = get_cb(p.msg_enum);
 	if (f != nullptr)
@@ -93,7 +91,6 @@ void msg_queue::consumer_method()
 		f(p.msg);
 	}
 
-	unfinished_num--;
 	current_thread_num--;
 }
 
@@ -102,26 +99,36 @@ void msg_queue::set_max_thread_num(int num)
 	this->max_thread_num = num;
 }
 
+void msg_queue::start()
+{
+	std::thread(&msg_queue::producer_method, this).detach();
+}
+
+int msg_queue::get_pos()
+{
+	int num = queue_pos;
+	return num;
+}
+
+int msg_queue::get_handled_pos()
+{
+	int num = queue_handled_pos;
+	return num;
+}
+
+int msg_queue::get_unfinished_num()
+{
+	return get_pos() - get_handled_pos();
+}
+
 int msg_queue::get_next_queue_pos()
 {
-	int pos = queue_pos % queue_size;
-	queue_pos++;
-	return pos;
+	int pos = queue_pos++;
+	return pos % queue_size;
 }
 
 int msg_queue::get_next_handle_pos()
 {
 	int pos = queue_handled_pos++;
 	return pos % queue_size;
-}
-
-int msg_queue::get_unfinished_num()
-{
-	int num = this->unfinished_num;
-	return num;
-}
-
-void msg_queue::start()
-{
-	std::thread(&msg_queue::producer_method, this).detach();
 }
