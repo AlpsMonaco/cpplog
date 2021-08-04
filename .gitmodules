@@ -1,0 +1,3 @@
+[submodule "src/msg_queue"]
+	path = src/msg_queue
+	url = https://github.com/AlpsMonaco/msg_queue
