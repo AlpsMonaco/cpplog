@@ -40,3 +40,4 @@
 *.log
 /src/Release/log.tlog
 /src/x64/Release/log.tlog
+/src/x64/

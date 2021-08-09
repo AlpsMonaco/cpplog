@@ -148,3 +148,28 @@ void mylog::logger::flush_log()
             log_fd->flush();
     }
 }
+
+mylog::logmgr::logmgr() {}
+
+mylog::logger *mylog::logmgr::get_logger(const char *log_name)
+{
+    auto it = this->m.find(log_name);
+    if (it != m.end())
+    {
+        return it->second;
+    }
+
+    mylog::logger *lgPtr = new mylog::logger(log_name);
+    char *temp_log_name = new char[mylog::logger::log_name_size];
+    strlib::strcpy(temp_log_name, log_name);
+
+    m[temp_log_name] = lgPtr;
+    return lgPtr;
+}
+
+mylog::logger *mylog::log(const char *log_name)
+{
+    return mylog::logmgr::get_ins()->get_logger(log_name);
+}
+
+mylog::logmgr *mylog::logmgr::ins = nullptr;

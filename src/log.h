@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
 #include <string>
+#include <map>
 #include <time.h>
 #include "util.h"
 
@@ -47,4 +48,29 @@ namespace mylog
         void close_log_handle();
     };
 
+    class logmgr
+    {
+    private:
+        static logmgr *ins;
+
+    public:
+        static logmgr *get_ins()
+        {
+            if (ins == nullptr)
+            {
+                ins = new logmgr();
+            }
+
+            return ins;
+        }
+
+        logger *get_logger(const char *log_name);
+
+    protected:
+        logmgr();
+
+        std::map<const char *, logger *, strlib::charPtrComparator> m;
+    };
+
+    logger *log(const char *log_name);
 }

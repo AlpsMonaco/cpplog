@@ -34,4 +34,13 @@ namespace strlib
 	void strcat(char *dst, const char *src);
 	bool strequ(const char *str1, const char *str2);
 	int strlen(const char *src);
+
+	struct charPtrComparator
+	{
+		bool operator()(const char *a, const char *b) const
+		{
+			return strcmp(a, b) < 0;
+		}
+	};
+
 }
