@@ -6,6 +6,7 @@
 #include <Windows.h>
 #else
 #include <unistd.h>
+#include <cstring>
 #endif
 
 template <typename T>
