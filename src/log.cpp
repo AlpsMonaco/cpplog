@@ -169,7 +169,30 @@ mylog::logmgr::logmgr()
                                   delete lp;
                               });
 
+    this->queue->register_msg(this->msg_enum_flush, [](void *param) -> void
+                              { ((mylog::logmgr *)param)->flush_all(); });
+
+    std::thread([this]() -> void
+                {
+                    for (;;)
+                    {
+                        std::this_thread::sleep_for(std::chrono::seconds(60 * 5));
+                        this->put_msg(this->msg_enum_flush, (void *)this);
+                    }
+                })
+        .detach();
+
     this->queue->start();
+}
+
+void mylog::logmgr::flush_all()
+{
+    auto mPtr = &mylog::logmgr::get_ins()->m;
+    auto it = mPtr->begin();
+    while (it != mPtr->end())
+    {
+        it->second->flush_log();
+    }
 }
 
 mylog::logger *mylog::logmgr::get_logger(const char *log_name)
