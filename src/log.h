@@ -4,6 +4,7 @@
 #include <map>
 #include <time.h>
 #include "util.h"
+#include "msg_queue/msg_queue.h"
 
 namespace mylog
 {
@@ -52,6 +53,7 @@ namespace mylog
     {
     private:
         static logmgr *ins;
+        msg_queue *queue;
 
     public:
         static logmgr *get_ins()
@@ -65,6 +67,9 @@ namespace mylog
         }
 
         logger *get_logger(const char *log_name);
+        static const int msg_enum_log = 1;
+        static const int msg_enum_write = 2;
+        void put_msg(int msg_enum, void *param);
 
     protected:
         logmgr();
@@ -72,5 +77,35 @@ namespace mylog
         std::map<const char *, logger *, strlib::charPtrComparator> m;
     };
 
-    logger *log(const char *log_name);
+    struct log_payload
+    {
+        logger *lg;
+        const char *content;
+
+        log_payload(const char *log_name)
+        {
+            this->content = nullptr;
+            this->lg = logmgr::get_ins()->get_logger(log_name);
+        };
+
+        void write(const char *log_content)
+        {
+            auto temp_char = new char[strlib::strlen(log_content) + 1];
+            strlib::strcpy(temp_char, log_content);
+            this->content = temp_char;
+
+            mylog::logmgr::get_ins()->put_msg(mylog::logmgr::msg_enum_write, (void *)this);
+        };
+
+        void log(const char *log_content)
+        {
+            auto temp_char = new char[strlib::strlen(log_content) + 1];
+            strlib::strcpy(temp_char, log_content);
+            this->content = temp_char;
+
+            mylog::logmgr::get_ins()->put_msg(mylog::logmgr::msg_enum_log, (void *)this);
+        };
+    };
+
+    log_payload *log(const char *log_name);
 }

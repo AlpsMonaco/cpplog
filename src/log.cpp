@@ -149,7 +149,28 @@ void mylog::logger::flush_log()
     }
 }
 
-mylog::logmgr::logmgr() {}
+mylog::logmgr::logmgr()
+{
+    this->queue = new msg_queue(1000);
+    this->queue->set_max_thread_num(1);
+    this->queue->register_msg(this->msg_enum_log, [](void *param) -> void
+                              {
+                                  auto lp = (log_payload *)param;
+                                  lp->lg->log(lp->content);
+                                  delete[] lp->content;
+                                  delete lp;
+                              });
+
+    this->queue->register_msg(this->msg_enum_write, [](void *param) -> void
+                              {
+                                  auto lp = (log_payload *)param;
+                                  lp->lg->write(lp->content);
+                                  delete[] lp->content;
+                                  delete lp;
+                              });
+
+    this->queue->start();
+}
 
 mylog::logger *mylog::logmgr::get_logger(const char *log_name)
 {
@@ -167,9 +188,14 @@ mylog::logger *mylog::logmgr::get_logger(const char *log_name)
     return lgPtr;
 }
 
-mylog::logger *mylog::log(const char *log_name)
+mylog::log_payload *mylog::log(const char *log_name)
 {
-    return mylog::logmgr::get_ins()->get_logger(log_name);
+    return new mylog::log_payload(log_name);
 }
 
 mylog::logmgr *mylog::logmgr::ins = nullptr;
+
+void mylog::logmgr::put_msg(int msg_enum, void *param)
+{
+    this->queue->put_msg(msg_enum, param);
+}

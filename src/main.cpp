@@ -2,5 +2,6 @@
 
 int main()
 {
-	mylog::log("info")->write("test");
+	mylog::log("info")->log("test");
+	std::this_thread::sleep_for(std::chrono::seconds(10));
 }
