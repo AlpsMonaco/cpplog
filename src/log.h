@@ -69,7 +69,7 @@ namespace mylog
         logger *get_logger(const char *log_name);
         static const int msg_enum_log = 1;
         static const int msg_enum_write = 2;
-        static const int msg_enum_flush = 2;
+        static const int msg_enum_flush = 3;
         void put_msg(int msg_enum, void *param);
         void flush_all();
 

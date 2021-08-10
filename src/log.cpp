@@ -176,7 +176,7 @@ mylog::logmgr::logmgr()
                 {
                     for (;;)
                     {
-                        std::this_thread::sleep_for(std::chrono::seconds(60 * 5));
+                        std::this_thread::sleep_for(std::chrono::seconds(300));
                         this->put_msg(this->msg_enum_flush, (void *)this);
                     }
                 })
@@ -192,6 +192,7 @@ void mylog::logmgr::flush_all()
     while (it != mPtr->end())
     {
         it->second->flush_log();
+        it++;
     }
 }
 
