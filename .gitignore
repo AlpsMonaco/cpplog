@@ -33,7 +33,7 @@
 *.pdb
 /src/Debug
 /src/.vs
-/src/.vscode
+/src/.vscode/c_cpp_properties.json
 /src/*.pdb
 /src/*.log
 /src/main.ilk
