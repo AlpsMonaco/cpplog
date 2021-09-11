@@ -1,5 +1,18 @@
 #include "log.h"
+#include "time.h"
+#include "msg_queue.h"
+#include <fstream>
+#include <iostream>
 #pragma warning(disable : 4996)
+
+#define LogFileHandlePtr ((std::ofstream *)p)
+#define LogFileHandle *(std::ofstream *)p
+
+template <typename T>
+void Println(T t)
+{
+    std::cout << t << std::endl;
+}
 
 void mylog::logger::current_time_str(char *dst)
 {
@@ -14,12 +27,12 @@ void mylog::logger::current_date(char *dst)
     time_t now = time(0);
     tm *ltm = localtime(&now);
 
-    sprintf(dst, "%d-%d-%d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday);
+    sprintf(dst, "%d-%02d-%02d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday);
 }
 
 void mylog::logger::set_log_name(const char *log_name)
 {
-    strlib::strcpy(this->log_name, log_name);
+    ::strcpy(this->log_name, log_name);
 }
 
 // write dst with log time preffix
@@ -35,18 +48,32 @@ void mylog::logger::log_time_preffix(char *dst)
 
 mylog::logger::logger()
 {
-    // this->log_fd = nullptr;
-    strlib::strcpy(this->log_name, "log");
+
+    log_name = (char *)malloc(LogNameSize);
+    log_date = (char *)malloc(LogDateSize);
+    log_file_name = (char *)malloc(LogNameSize + LogDateSize);
+
+    this->p = nullptr;
+    ::strcpy(this->log_name, "log");
+    strcpy(this->log_date, "0000-00-00");
 }
 
 mylog::logger::logger(const char *log_name)
 {
-    // this->log_fd = nullptr;
-    strlib::strcpy(this->log_name, log_name);
+    this->log_name = (char *)malloc(LogNameSize);
+    log_date = (char *)malloc(LogDateSize);
+    log_file_name = (char *)malloc(LogNameSize + LogDateSize);
+
+    this->p = nullptr;
+    ::strcpy(this->log_name, log_name);
+    strcpy(this->log_date, "0000-00-00");
 }
 
 mylog::logger::~logger()
 {
+    free(log_name);
+    free(log_date);
+    free(log_file_name);
     clear_log_handle();
 }
 
@@ -54,10 +81,10 @@ void mylog::logger::create_log_handle()
 {
     current_date(log_date);
 
-    strlib::strcpy(log_file_name, this->log_name);
-    strlib::strcat(log_file_name, " ");
-    strlib::strcat(log_file_name, log_date);
-    strlib::strcat(log_file_name, ".log");
+    ::strcpy(log_file_name, this->log_name);
+    ::strcat(log_file_name, " ");
+    ::strcat(log_file_name, log_date);
+    ::strcat(log_file_name, ".log");
 
     std::ofstream *fd = new std::ofstream(log_file_name, std::ios::app);
     if (!fd->is_open())
@@ -67,20 +94,31 @@ void mylog::logger::create_log_handle()
         return;
     }
 
-    this->log_fd = fd;
+    this->p = fd;
 }
 
 bool mylog::logger::is_same_date()
 {
-    char tmp_date[log_date_size];
-    current_date(tmp_date);
-    return strlib::strequ(tmp_date, log_date);
+    char *TmpDate = (char *)malloc(LogDateSize);
+
+    current_date(TmpDate);
+    bool IsDateEqu = [](const char *p1, const char *p2) -> bool
+    {
+        for (int i = 0; i < LogDateSize; i++)
+        {
+            if (p1[i] != p2[i])
+                return false;
+        }
+        return true;
+    }(TmpDate, log_date);
+    free(TmpDate);
+    return IsDateEqu;
 }
 
 void mylog::logger::clear_log_handle()
 {
-    strlib::strcpy(log_file_name, "");
-    strlib::strcpy(log_date, "");
+    ::strcpy(log_file_name, "");
+    ::strcpy(log_date, "");
     close_log_handle();
 }
 
@@ -92,11 +130,11 @@ void mylog::logger::write(const char *log)
         create_log_handle();
     }
 
-    auto content = new char[log_time_preffix_size + strlib::strlen(log)];
+    auto content = new char[LogTimePreffixSize + ::strlen(log)];
     log_time_preffix(content);
-    strlib::strcat(content, log);
+    ::strcat(content, log);
 
-    *log_fd << content << std::endl;
+    LogFileHandle << content << std::endl;
     delete[] content;
 }
 
@@ -109,11 +147,11 @@ void mylog::logger::log(const char *log)
         create_log_handle();
     }
 
-    auto content = new char[log_time_preffix_size + strlib::strlen(log)];
+    auto content = new char[LogTimePreffixSize + ::strlen(log)];
     log_time_preffix(content);
-    strlib::strcat(content, log);
+    ::strcat(content, log);
 
-    *log_fd << content << std::endl;
+    LogFileHandle << content << std::endl;
     std::cout << content << std::endl;
 
     delete[] content;
@@ -122,38 +160,40 @@ void mylog::logger::log(const char *log)
 void mylog::logger::format_log(char *dst, const char *log)
 {
     log_time_preffix(dst);
-    strlib::strcat(dst, log);
+    ::strcat(dst, log);
 }
 
 void mylog::logger::close_log_handle()
 {
 
-    if (this->log_fd != nullptr)
+    if (this->p != nullptr)
     {
-        if (this->log_fd->is_open())
+        if (LogFileHandlePtr->is_open())
         {
-            this->log_fd->close();
+            LogFileHandlePtr->close();
         }
 
-        delete this->log_fd;
-        this->log_fd = nullptr;
+        delete LogFileHandlePtr;
+        this->p = nullptr;
     }
 }
 
 void mylog::logger::flush_log()
 {
-    if (this->log_fd != nullptr)
+    if (this->p != nullptr)
     {
-        if (this->log_fd->is_open())
-            log_fd->flush();
+        if (LogFileHandlePtr->is_open())
+            LogFileHandlePtr->flush();
     }
 }
 
+#define MsgQueuePtr ((msg_queue *)p)
+
 mylog::logmgr::logmgr()
 {
-    this->queue = new msg_queue(1000);
-    this->queue->set_max_thread_num(1);
-    this->queue->register_msg(this->msg_enum_log, [](void *param) -> void
+    this->p = new msg_queue(10000);
+    MsgQueuePtr->set_max_thread_num(1);
+    MsgQueuePtr->register_msg(this->msg_enum_log, [](void *param) -> void
                               {
                                   auto lp = (log_payload *)param;
                                   lp->lg->log(lp->content);
@@ -161,7 +201,7 @@ mylog::logmgr::logmgr()
                                   delete lp;
                               });
 
-    this->queue->register_msg(this->msg_enum_write, [](void *param) -> void
+    MsgQueuePtr->register_msg(this->msg_enum_write, [](void *param) -> void
                               {
                                   auto lp = (log_payload *)param;
                                   lp->lg->write(lp->content);
@@ -169,7 +209,7 @@ mylog::logmgr::logmgr()
                                   delete lp;
                               });
 
-    this->queue->register_msg(this->msg_enum_flush, [](void *param) -> void
+    MsgQueuePtr->register_msg(this->msg_enum_flush, [](void *param) -> void
                               { ((mylog::logmgr *)param)->flush_all(); });
 
     std::thread([this]() -> void
@@ -182,7 +222,7 @@ mylog::logmgr::logmgr()
                 })
         .detach();
 
-    this->queue->start();
+    MsgQueuePtr->start();
 }
 
 void mylog::logmgr::flush_all()
@@ -205,8 +245,8 @@ mylog::logger *mylog::logmgr::get_logger(const char *log_name)
     }
 
     mylog::logger *lgPtr = new mylog::logger(log_name);
-    char *temp_log_name = new char[mylog::logger::log_name_size];
-    strlib::strcpy(temp_log_name, log_name);
+    char *temp_log_name = new char[LogNameSize];
+    ::strcpy(temp_log_name, log_name);
 
     m[temp_log_name] = lgPtr;
     return lgPtr;
@@ -221,5 +261,5 @@ mylog::logmgr *mylog::logmgr::ins = nullptr;
 
 void mylog::logmgr::put_msg(int msg_enum, void *param)
 {
-    this->queue->put_msg(msg_enum, param);
+    MsgQueuePtr->put_msg(msg_enum, param);
 }

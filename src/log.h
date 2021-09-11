@@ -1,13 +1,24 @@
 #pragma once
-#include <fstream>
-#include <string>
 #include <map>
-#include <time.h>
-#include "util.h"
-#include "msg_queue/msg_queue.h"
+#include <string.h>
+
+#define ExternPointer void *
+
+#define LogNameSize 128
+#define LogTimeSize 20
+#define LogDateSize 11
+#define LogTimePreffixSize 23
 
 namespace mylog
 {
+    struct charPtrComparator
+    {
+        bool operator()(const char *a, const char *b) const
+        {
+            return strcmp(a, b) < 0;
+        }
+    };
+
     class logger
     {
     public:
@@ -30,18 +41,11 @@ namespace mylog
         // there's a space char in the end of the log_time_preffix.
         static void log_time_preffix(char *dst);
 
-        static const int log_name_size = 128;
-        static const int log_time_size = 20;
-        static const int log_date_size = 11;
-        static const int log_time_preffix_size = 23;
-
     protected:
-        char log_name[log_name_size] = "log";
-
-        // 4 -> strlen(".log")
-        char log_file_name[log_name_size + log_date_size + 4] = "";
-        char log_date[log_date_size] = "";
-        std::ofstream *log_fd = nullptr;
+        char *log_name;
+        char *log_date;
+        char *log_file_name;
+        ExternPointer p;
 
         void create_log_handle();
         void clear_log_handle();
@@ -53,7 +57,7 @@ namespace mylog
     {
     private:
         static logmgr *ins;
-        msg_queue *queue;
+        ExternPointer p;
 
     public:
         static logmgr *get_ins()
@@ -76,7 +80,7 @@ namespace mylog
     protected:
         logmgr();
 
-        std::map<const char *, logger *, strlib::charPtrComparator> m;
+        std::map<const char *, logger *, charPtrComparator> m;
     };
 
     struct log_payload
@@ -92,8 +96,8 @@ namespace mylog
 
         void write(const char *log_content)
         {
-            auto temp_char = new char[strlib::strlen(log_content) + 1];
-            strlib::strcpy(temp_char, log_content);
+            auto temp_char = new char[::strlen(log_content) + 1];
+            ::strcpy(temp_char, log_content);
             this->content = temp_char;
 
             mylog::logmgr::get_ins()->put_msg(mylog::logmgr::msg_enum_write, (void *)this);
@@ -101,8 +105,8 @@ namespace mylog
 
         void log(const char *log_content)
         {
-            auto temp_char = new char[strlib::strlen(log_content) + 1];
-            strlib::strcpy(temp_char, log_content);
+            auto temp_char = new char[::strlen(log_content) + 1];
+            ::strcpy(temp_char, log_content);
             this->content = temp_char;
 
             mylog::logmgr::get_ins()->put_msg(mylog::logmgr::msg_enum_log, (void *)this);
