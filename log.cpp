@@ -1,5 +1,6 @@
 #include "log.h"
 #include <thread>
+#include <mutex>
 #include <unordered_map>
 #include <map>
 #include <atomic>
@@ -475,11 +476,14 @@ private:
     MsgQueue *msgQueuePtr;
 };
 
+
+
 struct LogManager
 {
-
+    std::mutex mu;
     std::map<const char *, logutil::Logger *, CStrCmp> m;
     MsgQueue *msgQueue;
+    
 
     LogManager()
     {
@@ -503,6 +507,7 @@ struct LogManager
 
     logutil::Logger *GetLogger(const char *name)
     {
+        mu.lock();
         auto it = m.find(name);
         if (m.end() == it)
         {
@@ -510,10 +515,12 @@ struct LogManager
             strcpy(tempName, name);
             logutil::Logger *p = new LoggerWithMgr(name, this->msgQueue);
             m.emplace(tempName, p);
+            mu.unlock();
             return p;
         }
         else
         {
+            mu.unlock();
             return it->second;
         }
     }
