@@ -41,3 +41,8 @@
 /src/Release/log.tlog
 /src/x64/Release/log.tlog
 /src/x64/
+/src/*.vcxproj
+/src/log.vcxproj.filters
+*vcxproj*
+/*.ilk
+/*.sln

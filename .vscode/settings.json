@@ -1,13 +1,13 @@
 {
 	"files.associations": {
 		"thread": "cpp",
+		"chrono": "cpp",
 		"algorithm": "cpp",
 		"array": "cpp",
 		"atomic": "cpp",
 		"bit": "cpp",
 		"cctype": "cpp",
 		"charconv": "cpp",
-		"chrono": "cpp",
 		"clocale": "cpp",
 		"cmath": "cpp",
 		"compare": "cpp",
@@ -22,12 +22,10 @@
 		"exception": "cpp",
 		"format": "cpp",
 		"forward_list": "cpp",
-		"fstream": "cpp",
 		"initializer_list": "cpp",
 		"iomanip": "cpp",
 		"ios": "cpp",
 		"iosfwd": "cpp",
-		"iostream": "cpp",
 		"istream": "cpp",
 		"iterator": "cpp",
 		"limits": "cpp",
@@ -63,6 +61,11 @@
 		"xstring": "cpp",
 		"xtr1common": "cpp",
 		"xtree": "cpp",
-		"xutility": "cpp"
+		"xutility": "cpp",
+		"unordered_map": "cpp",
+		"iostream": "cpp",
+		"list": "cpp",
+		"xhash": "cpp",
+		"fstream": "cpp"
 	}
 }
