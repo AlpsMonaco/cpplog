@@ -46,3 +46,6 @@
 *vcxproj*
 /*.ilk
 /*.sln
+/.vs
+/Debug
+/x64

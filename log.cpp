@@ -477,7 +477,6 @@ private:
 };
 
 
-
 struct LogManager
 {
     std::mutex mu;
@@ -527,7 +526,22 @@ struct LogManager
 
 } LogManager;
 
-logutil::Logger *logutil::Name(const char *name)
+logutil::Logger *logutil::GetLogger(const char *name)
 {
     return LogManager.GetLogger(name);
+}
+
+void logutil::LoggerShell::Log(const char* logContent)
+{
+    this->l->Log(logContent);
+}
+
+void logutil::LoggerShell::Print(const char* logContent)
+{
+    this->l->Print(logContent);
+}
+
+logutil::LoggerShell logutil::LogName(const char* logName)
+{
+    return LoggerShell(LogManager.GetLogger(logName));
 }

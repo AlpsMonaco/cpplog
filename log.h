@@ -36,8 +36,6 @@ using LogInterface = void (*)(const char *);
 // logger::Name("info").Print("something");
 namespace logutil
 {
-    void SetLogDir(const char *dirPath);
-
     class Logger
     {
     public:
@@ -54,5 +52,18 @@ namespace logutil
         ExternPointer p;
     };
 
-    Logger *Name(const char *);
+    struct LoggerShell {
+        Logger* l;
+
+        LoggerShell(Logger* l) {
+            this->l = l;
+        }
+
+       void Log(const char* logContent);
+       void Print(const char* logContent);
+    };
+
+
+    LoggerShell LogName(const char* logName);
+    Logger* GetLogger(const char* logName);
 };
