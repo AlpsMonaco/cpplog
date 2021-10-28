@@ -411,7 +411,7 @@ void logutil::Logger::CurrentTime(char *dst)
     time_t now = time(0);
     tm *ltm = localtime(&now);
 
-    sprintf(dst, "%d-%02d-%02d %02d:%02d:%02d", 1900 + ltm->tm_year, ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    sprintf(dst, "%d-%02d-%02d %02d:%02d:%02d", 1900 + ltm->tm_year, ltm->tm_mon + 1, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
 }
 
 void logutil::Logger::Log(const char *logContent)
@@ -476,13 +476,11 @@ private:
     MsgQueue *msgQueuePtr;
 };
 
-
 struct LogManager
 {
     std::mutex mu;
     std::map<const char *, logutil::Logger *, CStrCmp> m;
     MsgQueue *msgQueue;
-    
 
     LogManager()
     {
@@ -531,17 +529,17 @@ logutil::Logger *logutil::GetLogger(const char *name)
     return LogManager.GetLogger(name);
 }
 
-void logutil::LoggerShell::Log(const char* logContent)
+void logutil::LoggerShell::Log(const char *logContent)
 {
     this->l->Log(logContent);
 }
 
-void logutil::LoggerShell::Print(const char* logContent)
+void logutil::LoggerShell::Print(const char *logContent)
 {
     this->l->Print(logContent);
 }
 
-logutil::LoggerShell logutil::LogName(const char* logName)
+logutil::LoggerShell logutil::LogName(const char *logName)
 {
     return LoggerShell(LogManager.GetLogger(logName));
 }
